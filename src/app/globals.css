@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background-color: #F4F3EF;
+  color: #0B0B0C;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hairline divider, garment-tag style */
+.hairline {
+  border-top: 1px solid rgba(11, 11, 12, 0.1);
+}
+
+.tag-number::before {
+  content: attr(data-tag);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #8A8A8E;
+  margin-right: 8px;
+}
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid rgba(11, 11, 12, 0.08);
+  border-radius: 2px;
+}
+
+.stitch {
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(11, 11, 12, 0.18) 0,
+    rgba(11, 11, 12, 0.18) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  height: 1px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9C8C3;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid #0B0B0C;
+  outline-offset: 2px;
+}
