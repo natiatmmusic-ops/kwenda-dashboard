@@ -1,13 +1,13 @@
 // Fake sample data — replace with real API / database calls later.
 
 export const salesSummary = {
-  totalSalesThisMonth: 48250,
-  onlineSales: 31400,
-  kioskSales: 16850,
-  orders: 612,
-  avgOrderValue: 78.84,
-  bestSellingProduct: "Onyx Cargo Pant",
-  monthOverMonthChange: 12.4,
+  totalSalesThisMonth: 0,
+  onlineSales: 0,
+  kioskSales: 0,
+  orders: 0,
+  avgOrderValue: 0,
+  bestSellingProduct: "Zip up",
+  monthOverMonthChange: 0,
 };
 
 export const monthlySalesTrend = [
@@ -20,8 +20,8 @@ export const monthlySalesTrend = [
 ];
 
 export const salesByChannel = [
-  { name: "Online", value: 31400 },
-  { name: "Kiosk", value: 16850 },
+  { name: "Online", value: 0 },
+  { name: "Kiosk", value: 0 },
 ];
 
 export const topProducts = [
@@ -33,19 +33,19 @@ export const topProducts = [
 ];
 
 export const socialSummary = {
-  instagramViews: 482000,
-  instagramFollowers: 38200,
-  tiktokViews: 915000,
-  websiteVisits: 26500,
+  instagramViews: 1,
+  instagramFollowers: 14k,
+  tiktokViews: 1,
+  websiteVisits: 1,
   engagementRate: 6.8,
   followerGrowthThisWeek: 1.9,
 };
 
 export const weeklyGrowth = [
-  { week: "W1", instagram: 35200, tiktok: 780000, visits: 19800 },
-  { week: "W2", instagram: 36100, tiktok: 822000, visits: 21200 },
-  { week: "W3", instagram: 37000, tiktok: 860000, visits: 23400 },
-  { week: "W4", instagram: 38200, tiktok: 915000, visits: 26500 },
+  { week: "W1", instagram: 35200, tiktok: 0, visits: 0 },
+  { week: "W2", instagram: 36100, tiktok: 0, visits: 0 },
+  { week: "W3", instagram: 37000, tiktok: 0, visits: 0 },
+  { week: "W4", instagram: 38200, tiktok: 0, visits: 0 },
 ];
 
 export const calendarEvents = [
