@@ -34,7 +34,7 @@ export const topProducts = [
 
 export const socialSummary = {
   instagramViews: 1,
-  instagramFollowers: 14k,
+  instagramFollowers: 14,
   tiktokViews: 1,
   websiteVisits: 1,
   engagementRate: 6.8,
