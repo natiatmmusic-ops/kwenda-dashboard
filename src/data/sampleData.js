@@ -124,44 +124,7 @@ export const actionPlans = [
 
 export const futureDrops = [
   {
-    id: 1,
-    name: "Drop 04 — Onyx Field",
-    productType: "Outerwear / Pants",
-    plannedDate: "2026-06-24",
-    photoshootDate: "2026-06-03",
-    inventoryStatus: "Ready",
-    marketingStatus: "In Progress",
-    launchStatus: "Scheduled",
-  },
-  {
-    id: 2,
-    name: "Drop 05 — Bone Archive",
-    productType: "Knitwear",
-    plannedDate: "2026-07-22",
-    photoshootDate: "2026-07-05",
-    inventoryStatus: "In Production",
-    marketingStatus: "Not Started",
-    launchStatus: "Planning",
-  },
-  {
-    id: 3,
-    name: "Capsule — Tag Series 02",
-    productType: "Accessories",
-    plannedDate: "2026-08-10",
-    photoshootDate: "2026-07-28",
-    inventoryStatus: "Sourcing",
-    marketingStatus: "Not Started",
-    launchStatus: "Planning",
-  },
-  {
-    id: 4,
-    name: "Drop 03 — Ashfield (restock)",
-    productType: "Hoodies",
-    plannedDate: "2026-06-15",
-    photoshootDate: "2026-05-20",
-    inventoryStatus: "Ready",
-    marketingStatus: "Ready",
-    launchStatus: "Live",
+
   },
 ];
 
