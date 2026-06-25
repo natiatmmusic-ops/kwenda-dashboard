@@ -1,5 +1,5 @@
 import { ensureSchema, query } from "@/lib/db";
-import { calculateStats } from "@/lib/stats";
+import { calculateStats, calculateMonthlyTrend } from "@/lib/stats";
 import StatCard from "@/components/StatCard";
 import SectionLabel from "@/components/SectionLabel";
 import SalesTrendChart from "@/components/charts/SalesTrendChart";
