@@ -1,10 +1,18 @@
+import { ensureSchema, query } from "@/lib/db";
+import { calculateStats } from "@/lib/stats";
 import StatCard from "@/components/StatCard";
 import SectionLabel from "@/components/SectionLabel";
 import SalesTrendChart from "@/components/charts/SalesTrendChart";
 import ChannelDonut from "@/components/charts/ChannelDonut";
-import { salesSummary, topProducts } from "@/data/sampleData";
+import { topProducts } from "@/data/sampleData";
 
-export default function SalesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function SalesPage() {
+  await ensureSchema();
+  const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
+  const stats = calculateStats(result.rows);
+
   return (
     <div className="space-y-10">
       <section>
@@ -13,37 +21,38 @@ export default function SalesPage() {
           <StatCard
             tag="TOTAL SALES"
             label="This Month"
-            value={`$${salesSummary.totalSalesThisMonth.toLocaleString()}`}
-            sub={`+${salesSummary.monthOverMonthChange}% MoM`}
+            value={`$${stats.thisMonthRevenue.toLocaleString()}`}
+            sub={`${stats.monthOverMonthChange >= 0 ? "+" : ""}${stats.monthOverMonthChange}% MoM`}
             accent
           />
           <StatCard
             tag="ONLINE"
             label="Online Sales"
-            value={`$${salesSummary.onlineSales.toLocaleString()}`}
+            value="—"
+            sub="Channel tracking not set up yet"
           />
           <StatCard
             tag="KIOSK"
             label="Kiosk Sales"
-            value={`$${salesSummary.kioskSales.toLocaleString()}`}
+            value="—"
+            sub="Channel tracking not set up yet"
           />
-          <StatCard tag="ORDERS" label="Total Orders" value={salesSummary.orders} />
+          <StatCard tag="ORDERS" label="Total Orders" value={stats.totalOrders} />
         </div>
       </section>
-
       <section className="grid grid-cols-2 gap-4">
         <StatCard
           tag="AOV"
           label="Average Order Value"
-          value={`$${salesSummary.avgOrderValue}`}
+          value={`$${stats.averageOrderValue}`}
         />
         <StatCard
           tag="BEST SELLER"
           label="Top Product This Month"
-          value={salesSummary.bestSellingProduct}
+          value="—"
+          sub="Product-level tracking not set up yet"
         />
       </section>
-
       <section className="grid grid-cols-3 gap-5">
         <div className="card p-6 col-span-2 shadow-card">
           <SectionLabel tag="01.2" title="Sales Trend — 6 Months" />
@@ -54,7 +63,6 @@ export default function SalesPage() {
           <ChannelDonut />
         </div>
       </section>
-
       <section className="card p-6 shadow-card">
         <SectionLabel tag="01.4" title="Top Products" />
         <table className="w-full text-[13px]">
