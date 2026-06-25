@@ -14,13 +14,16 @@ import {
   statusStyles,
   priorityStyles,
 } from "@/data/sampleData";
-
 export default async function DashboardPage() {
   await ensureSchema();
   const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
-const stats = calculateStats(result.rows);  const upcoming = actionPlans
+  const stats = calculateStats(result.rows);
+  const trend = calculateMonthlyTrend(result.rows);
+  const upcoming = actionPlans
     .filter((p) => p.status !== "Done")
     .slice(0, 4);
+  const nextEvents = calendarEvents.slice(0, 4);
+  const nextDrop = futureDrops[0];
 
   const nextEvents = calendarEvents.slice(0, 4);
   const nextDrop = futureDrops[0];
