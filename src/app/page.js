@@ -18,8 +18,7 @@ import {
 export default async function DashboardPage() {
   await ensureSchema();
   const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
-const trend = calculateMonthlyTrend(result.rows);
-  const upcoming = actionPlans
+const stats = calculateStats(result.rows);  const upcoming = actionPlans
     .filter((p) => p.status !== "Done")
     .slice(0, 4);
 
