@@ -61,3 +61,29 @@ export function calculateStats(orders) {
     monthOverMonthChange,
   };
 }
+export function calculateMonthlyTrend(orders, monthsBack = 6) {
+  const now = new Date();
+  const buckets = [];
+
+  for (let i = monthsBack - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleString("en-US", { month: "short" });
+    buckets.push({ key, month: label, revenue: 0 });
+  }
+
+  const map = new Map(buckets.map((b) => [b.key, b]));
+
+  for (const order of orders) {
+    if (!order.created_at) continue;
+    const key = new Date(order.created_at).toISOString().slice(0, 7);
+    if (map.has(key)) {
+      map.get(key).revenue += Number(order.total || 0);
+    }
+  }
+
+  return buckets.map((b) => ({
+    month: b.month,
+    revenue: Math.round(b.revenue * 100) / 100,
+  }));
+}
