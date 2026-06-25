@@ -9,14 +9,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
-import { monthlySalesTrend } from "@/data/sampleData";
 
-export default function SalesTrendChart() {
+export default function SalesTrendChart({ data }) {
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <ComposedChart data={monthlySalesTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+      <ComposedChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="#0B0B0C" strokeOpacity={0.06} vertical={false} />
         <XAxis
           dataKey="month"
@@ -41,14 +39,10 @@ export default function SalesTrendChart() {
           labelStyle={{ color: "#8A8A8E" }}
           itemStyle={{ color: "#F4F3EF" }}
         />
-        <Legend
-          wrapperStyle={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#54545A" }}
-        />
-        <Bar dataKey="kiosk" stackId="a" fill="#C9C8C3" name="Kiosk" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="online" stackId="a" fill="#0B0B0C" name="Online" radius={[2, 2, 0, 0]} />
+        <Bar dataKey="revenue" fill="#0B0B0C" name="Revenue" radius={[2, 2, 0, 0]} />
         <Line
           type="monotone"
-          dataKey="online"
+          dataKey="revenue"
           stroke="#FF5A1F"
           strokeWidth={2}
           dot={false}
