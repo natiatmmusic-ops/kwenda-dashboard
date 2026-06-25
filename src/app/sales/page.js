@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 
 export default async function SalesPage() {
   await ensureSchema();
-  const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
-  const stats = calculateStats(result.rows);
-
+const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
+const stats = calculateStats(result.rows);
+const trend = calculateMonthlyTrend(result.rows);
   return (
     <div className="space-y-10">
       <section>
