@@ -21,6 +21,32 @@ export function calculateStats(orders) {
     .sort(([a], [b]) => (a > b ? 1 : -1))
     .map(([date, revenue]) => ({ date, revenue: Math.round(revenue * 100) / 100 }));
 
+  // This month vs last month
+  const now = new Date();
+  const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthKey = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth() + 1).padStart(2, "0")}`;
+
+  let thisMonthRevenue = 0;
+  let thisMonthOrders = 0;
+  let lastMonthRevenue = 0;
+
+  for (const order of orders) {
+    if (!order.created_at) continue;
+    const monthKey = new Date(order.created_at).toISOString().slice(0, 7);
+    if (monthKey === thisMonthKey) {
+      thisMonthRevenue += Number(order.total || 0);
+      thisMonthOrders += 1;
+    } else if (monthKey === lastMonthKey) {
+      lastMonthRevenue += Number(order.total || 0);
+    }
+  }
+
+  const monthOverMonthChange =
+    lastMonthRevenue > 0
+      ? Math.round(((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 1000) / 10
+      : 0;
+
   return {
     totalOrders,
     totalRevenue: Math.round(totalRevenue * 100) / 100,
@@ -29,5 +55,9 @@ export function calculateStats(orders) {
     unfulfilled,
     ordersWithDiscount,
     revenueTrend,
+    thisMonthRevenue: Math.round(thisMonthRevenue * 100) / 100,
+    thisMonthOrders,
+    lastMonthRevenue: Math.round(lastMonthRevenue * 100) / 100,
+    monthOverMonthChange,
   };
 }
