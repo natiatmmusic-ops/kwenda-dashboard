@@ -1,5 +1,5 @@
 import { ensureSchema, query } from "@/lib/db";
-import { calculateStats } from "@/lib/stats";
+import { calculateStats, calculateMonthlyTrend } from "@/lib/stats";
 import StatCard from "@/components/StatCard";
 import SectionLabel from "@/components/SectionLabel";
 import { StatusBadge, PriorityBadge } from "@/components/Badge";
@@ -18,8 +18,7 @@ import {
 export default async function DashboardPage() {
   await ensureSchema();
   const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
-  const stats = calculateStats(result.rows);
-
+const trend = calculateMonthlyTrend(result.rows);
   const upcoming = actionPlans
     .filter((p) => p.status !== "Done")
     .slice(0, 4);
@@ -63,8 +62,7 @@ export default async function DashboardPage() {
       <section className="grid grid-cols-3 gap-5">
         <div className="card p-6 col-span-2 shadow-card">
           <SectionLabel tag="01" title="Sales Trend — 6 Months" />
-          <SalesTrendChart />
-        </div>
+<SalesTrendChart data={trend} />        </div>
         <div className="card p-6 shadow-card">
           <SectionLabel tag="05" title="Next Drop" />
           <div className="space-y-3">
