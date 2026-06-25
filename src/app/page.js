@@ -1,10 +1,11 @@
+import { ensureSchema, query } from "@/lib/db";
+import { calculateStats } from "@/lib/stats";
 import StatCard from "@/components/StatCard";
 import SectionLabel from "@/components/SectionLabel";
 import { StatusBadge, PriorityBadge } from "@/components/Badge";
 import SalesTrendChart from "@/components/charts/SalesTrendChart";
 import GrowthChart from "@/components/charts/GrowthChart";
 import {
-  salesSummary,
   socialSummary,
   actionPlans,
   futureDrops,
@@ -14,7 +15,11 @@ import {
   priorityStyles,
 } from "@/data/sampleData";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await ensureSchema();
+  const result = await query(`SELECT * FROM orders ORDER BY created_at DESC`);
+  const stats = calculateStats(result.rows);
+
   const upcoming = actionPlans
     .filter((p) => p.status !== "Done")
     .slice(0, 4);
@@ -31,15 +36,15 @@ export default function DashboardPage() {
           <StatCard
             tag="TOTAL SALES"
             label="This Month"
-            value={`$${salesSummary.totalSalesThisMonth.toLocaleString()}`}
-            sub={`+${salesSummary.monthOverMonthChange}% vs last month`}
+            value={`$${stats.thisMonthRevenue.toLocaleString()}`}
+            sub={`${stats.monthOverMonthChange >= 0 ? "+" : ""}${stats.monthOverMonthChange}% vs last month`}
             accent
           />
           <StatCard
             tag="ORDERS"
             label="Total Orders"
-            value={salesSummary.orders}
-            sub={`AOV $${salesSummary.avgOrderValue}`}
+            value={stats.totalOrders}
+            sub={`AOV $${stats.averageOrderValue}`}
           />
           <StatCard
             tag="IG FOLLOWERS"
@@ -65,24 +70,24 @@ export default function DashboardPage() {
         <div className="card p-6 shadow-card">
           <SectionLabel tag="05" title="Next Drop" />
           <div className="space-y-3">
-            <div className="font-display text-xl">{nextDrop.name}</div>
-            <div className="text-xs text-ash font-mono">{nextDrop.productType}</div>
+            <div className="font-display text-xl">{nextDrop?.name}</div>
+            <div className="text-xs text-ash font-mono">{nextDrop?.productType}</div>
             <div className="hairline pt-3 space-y-2 text-[13px]">
               <div className="flex justify-between">
                 <span className="text-ash">Launch date</span>
-                <span className="font-mono">{nextDrop.plannedDate}</span>
+                <span className="font-mono">{nextDrop?.plannedDate}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-ash">Inventory</span>
-                <StatusBadge status={nextDrop.inventoryStatus} styles={statusStyles} />
+                <StatusBadge status={nextDrop?.inventoryStatus} styles={statusStyles} />
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-ash">Marketing</span>
-                <StatusBadge status={nextDrop.marketingStatus} styles={statusStyles} />
+                <StatusBadge status={nextDrop?.marketingStatus} styles={statusStyles} />
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-ash">Launch</span>
-                <StatusBadge status={nextDrop.launchStatus} styles={statusStyles} />
+                <StatusBadge status={nextDrop?.launchStatus} styles={statusStyles} />
               </div>
             </div>
           </div>
@@ -113,24 +118,3 @@ export default function DashboardPage() {
       {/* Action plans preview */}
       <section className="card p-6 shadow-card">
         <SectionLabel tag="04" title="Action Plans — Needs Attention" />
-        <div className="grid grid-cols-2 gap-3">
-          {upcoming.map((p) => (
-            <div key={p.id} className="hairline pt-3 flex items-center justify-between">
-              <div>
-                <div className="text-[11px] font-mono text-fog uppercase">{p.category}</div>
-                <div className="text-[14px] font-medium">{p.title}</div>
-                <div className="text-[11px] text-ash mt-0.5">
-                  {p.owner} · due {p.dueDate}
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-1.5">
-                <StatusBadge status={p.status} styles={statusStyles} />
-                <PriorityBadge priority={p.priority} styles={priorityStyles} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
