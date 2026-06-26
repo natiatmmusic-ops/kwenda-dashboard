@@ -22,10 +22,7 @@ export default async function DashboardPage() {
   const upcoming = actionPlans
     .filter((p) => p.status !== "Done")
     .slice(0, 4);
-  const nextEvents = calendarEvents.slice(0, 4);
-  const nextDrop = futureDrops[0];
-
-  const nextEvents = calendarEvents.slice(0, 4);
+ const nextEvents = calendarEvents.slice(0, 4);
   const nextDrop = futureDrops[0];
 
   return (
