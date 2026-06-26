@@ -12,8 +12,11 @@ export function getPool() {
   return pool;
 }
 
+// Makes sure all tables exist. Safe to call every time —
+// it only creates tables if they aren't there already.
 export async function ensureSchema() {
   const db = getPool();
+
   await db.query(`
     CREATE TABLE IF NOT EXISTS orders (
       id SERIAL PRIMARY KEY,
@@ -29,6 +32,20 @@ export async function ensureSchema() {
       discount_code TEXT,
       created_at TIMESTAMP,
       imported_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS action_items (
+      id SERIAL PRIMARY KEY,
+      category TEXT NOT NULL DEFAULT 'Weekly Action Plan',
+      title TEXT NOT NULL,
+      owner TEXT,
+      due_date DATE,
+      status TEXT NOT NULL DEFAULT 'Not Started',
+      priority TEXT NOT NULL DEFAULT 'Medium',
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
     );
   `);
 }
