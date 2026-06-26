@@ -19,6 +19,8 @@ export default function ActionPlansBoard({ initialPlans }) {
   const [plans, setPlans] = useState(initialPlans);
   const [activeCategory, setActiveCategory] = useState("All");
   const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [draft, setDraft] = useState({
     category: categories[0],
     title: "",
@@ -26,34 +28,81 @@ export default function ActionPlansBoard({ initialPlans }) {
     dueDate: "",
     status: "Not Started",
     priority: "Medium",
+    notes: "",
   });
 
   const visible =
     activeCategory === "All" ? plans : plans.filter((p) => p.category === activeCategory);
 
-  function addPlan(e) {
+  async function addPlan(e) {
     e.preventDefault();
     if (!draft.title || !draft.owner || !draft.dueDate) return;
-    setPlans((prev) => [...prev, { id: Date.now(), ...draft }]);
-    setDraft({
-      category: categories[0],
-      title: "",
-      owner: "",
-      dueDate: "",
-      status: "Not Started",
-      priority: "Medium",
-    });
-    setShowForm(false);
+
+    setSaving(true);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/action-items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed to add item");
+
+      setPlans((prev) => [...prev, data.item]);
+      setDraft({
+        category: categories[0],
+        title: "",
+        owner: "",
+        dueDate: "",
+        status: "Not Started",
+        priority: "Medium",
+        notes: "",
+      });
+      setShowForm(false);
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function cycleStatus(id) {
-    setPlans((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? { ...p, status: statuses[(statuses.indexOf(p.status) + 1) % statuses.length] }
-          : p
-      )
-    );
+  async function cycleStatus(id) {
+    const current = plans.find((p) => p.id === id);
+    if (!current) return;
+
+    const newStatus = statuses[(statuses.indexOf(current.status) + 1) % statuses.length];
+
+    setPlans((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
+
+    try {
+      const res = await fetch("/api/action-items", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+    } catch (err) {
+      setPlans((prev) => prev.map((p) => (p.id === id ? { ...p, status: current.status } : p)));
+      setErrorMsg(err.message);
+    }
+  }
+
+  async function deletePlan(id) {
+    if (!window.confirm("Delete this item? This can't be undone.")) return;
+
+    const previous = plans;
+    setPlans((prev) => prev.filter((p) => p.id !== id));
+
+    try {
+      const res = await fetch(`/api/action-items?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete item");
+    } catch (err) {
+      setPlans(previous);
+      setErrorMsg(err.message);
+    }
   }
 
   return (
@@ -87,6 +136,10 @@ export default function ActionPlansBoard({ initialPlans }) {
           {showForm ? "Close" : "+ New Plan Item"}
         </button>
       </div>
+
+      {errorMsg && (
+        <p className="text-[12px] text-red-600 font-mono">⚠ {errorMsg}</p>
+      )}
 
       {showForm && (
         <form onSubmit={addPlan} className="card p-5 grid grid-cols-6 gap-3 items-end shadow-card">
@@ -162,11 +215,22 @@ export default function ActionPlansBoard({ initialPlans }) {
               ))}
             </select>
           </div>
+          <div className="flex flex-col gap-1 col-span-6">
+            <label className="text-[11px] font-mono text-fog uppercase">Notes</label>
+            <textarea
+              value={draft.notes}
+              onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
+              className="focus-ring border border-mist rounded-sm px-3 py-2 text-[13px]"
+              placeholder="Optional notes"
+              rows={2}
+            />
+          </div>
           <button
             type="submit"
-            className="col-span-6 focus-ring py-2 bg-ink text-bone text-[12px] uppercase tracking-wide font-mono rounded-sm hover:bg-charcoal"
+            disabled={saving}
+            className="col-span-6 focus-ring py-2 bg-ink text-bone text-[12px] uppercase tracking-wide font-mono rounded-sm hover:bg-charcoal disabled:opacity-50"
           >
-            Add to Plan
+            {saving ? "Saving..." : "Add to Plan"}
           </button>
         </form>
       )}
@@ -181,6 +245,8 @@ export default function ActionPlansBoard({ initialPlans }) {
               <th className="py-3 px-5 font-medium">Due</th>
               <th className="py-3 px-5 font-medium">Status</th>
               <th className="py-3 px-5 font-medium">Priority</th>
+              <th className="py-3 px-5 font-medium">Notes</th>
+              <th className="py-3 px-5 font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -188,29 +254,4 @@ export default function ActionPlansBoard({ initialPlans }) {
               <tr key={p.id} className="hairline hover:bg-charcoal/[0.02]">
                 <td className="py-3 px-5 text-[11px] font-mono text-fog uppercase">{p.category}</td>
                 <td className="py-3 px-5 font-medium">{p.title}</td>
-                <td className="py-3 px-5 text-ash">{p.owner}</td>
-                <td className="py-3 px-5 font-mono text-ash">{p.dueDate}</td>
-                <td className="py-3 px-5">
-                  <button onClick={() => cycleStatus(p.id)} className="focus-ring">
-                    <StatusBadge status={p.status} styles={statusStyles} />
-                  </button>
-                </td>
-                <td className="py-3 px-5">
-                  <PriorityBadge priority={p.priority} styles={priorityStyles} />
-                </td>
-              </tr>
-            ))}
-            {visible.length === 0 && (
-              <tr>
-                <td colSpan={6} className="py-8 px-5 text-center text-ash text-[13px]">
-                  No items in this plan yet. Add one above.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <p className="text-[11px] text-fog font-mono">Tip: click a status badge to cycle it.</p>
-    </div>
-  );
-}
+                <td className="py-3 px-5
