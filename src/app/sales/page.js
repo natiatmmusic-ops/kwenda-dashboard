@@ -56,8 +56,7 @@ const trend = calculateMonthlyTrend(result.rows);
       <section className="grid grid-cols-3 gap-5">
         <div className="card p-6 col-span-2 shadow-card">
           <SectionLabel tag="01.2" title="Sales Trend — 6 Months" />
-          <SalesTrendChart />
-        </div>
+<SalesTrendChart data={trend} />        </div>
         <div className="card p-6 shadow-card">
           <SectionLabel tag="01.3" title="Channel Split" />
           <ChannelDonut />
