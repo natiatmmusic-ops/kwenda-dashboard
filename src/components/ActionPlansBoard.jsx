@@ -75,6 +75,7 @@ export default function ActionPlansBoard({ initialPlans }) {
 
     const newStatus = statuses[(statuses.indexOf(current.status) + 1) % statuses.length];
 
+    // Update immediately so the UI feels instant
     setPlans((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
 
     try {
@@ -85,6 +86,7 @@ export default function ActionPlansBoard({ initialPlans }) {
       });
       if (!res.ok) throw new Error("Failed to update status");
     } catch (err) {
+      // Revert on failure
       setPlans((prev) => prev.map((p) => (p.id === id ? { ...p, status: current.status } : p)));
       setErrorMsg(err.message);
     }
@@ -254,4 +256,40 @@ export default function ActionPlansBoard({ initialPlans }) {
               <tr key={p.id} className="hairline hover:bg-charcoal/[0.02]">
                 <td className="py-3 px-5 text-[11px] font-mono text-fog uppercase">{p.category}</td>
                 <td className="py-3 px-5 font-medium">{p.title}</td>
-                <td className="py-3 px-5
+                <td className="py-3 px-5 text-ash">{p.owner}</td>
+                <td className="py-3 px-5 font-mono text-ash">{p.dueDate}</td>
+                <td className="py-3 px-5">
+                  <button onClick={() => cycleStatus(p.id)} className="focus-ring">
+                    <StatusBadge status={p.status} styles={statusStyles} />
+                  </button>
+                </td>
+                <td className="py-3 px-5">
+                  <PriorityBadge priority={p.priority} styles={priorityStyles} />
+                </td>
+                <td className="py-3 px-5 text-ash text-[12px] max-w-[200px] truncate">
+                  {p.notes}
+                </td>
+                <td className="py-3 px-5">
+                  <button
+                    onClick={() => deletePlan(p.id)}
+                    className="focus-ring text-[11px] font-mono uppercase text-fog hover:text-red-600"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {visible.length === 0 && (
+              <tr>
+                <td colSpan={8} className="py-8 px-5 text-center text-ash text-[13px]">
+                  No items in this plan yet. Add one above.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-[11px] text-fog font-mono">Tip: click a status badge to cycle it.</p>
+    </div>
+  );
+}
