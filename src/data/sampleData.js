@@ -63,8 +63,8 @@ export const eventTypeStyles = {
   popup: { label: "Pop-up Event", dot: "bg-ink" },
   sale: { label: "Sale Campaign", dot: "bg-fog" },
   drop: { label: "Drop Date", dot: "bg-ink" },
+  task: { label: "Action Plan Task", dot: "bg-tag" },
 };
-
 export const actionPlans = [
   {
     id: 1,
