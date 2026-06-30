@@ -12,6 +12,7 @@ function mapRow(row) {
     status: row.status,
     priority: row.priority,
     notes: row.notes || "",
+    link: row.link || "",
   };
 }
 
