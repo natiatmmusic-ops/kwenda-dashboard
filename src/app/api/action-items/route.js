@@ -46,8 +46,8 @@ export async function POST(request) {
     }
 
     const result = await query(
-      `INSERT INTO action_items (category, title, owner, due_date, status, priority, notes)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
+      `INSERT INTO action_items (category, title, owner, due_date, status, priority, notes, link)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        RETURNING *`,
       [
         category || "Weekly Action Plan",
@@ -57,6 +57,7 @@ export async function POST(request) {
         status || "Not Started",
         priority || "Medium",
         notes || null,
+        link || null,
       ]
     );
 
