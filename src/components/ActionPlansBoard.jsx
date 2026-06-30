@@ -29,6 +29,7 @@ export default function ActionPlansBoard({ initialPlans }) {
     status: "Not Started",
     priority: "Medium",
     notes: "",
+    link: "",
   });
 
   const visible =
@@ -60,6 +61,7 @@ export default function ActionPlansBoard({ initialPlans }) {
         status: "Not Started",
         priority: "Medium",
         notes: "",
+        link: "",
       });
       setShowForm(false);
     } catch (err) {
@@ -75,7 +77,6 @@ export default function ActionPlansBoard({ initialPlans }) {
 
     const newStatus = statuses[(statuses.indexOf(current.status) + 1) % statuses.length];
 
-    // Update immediately so the UI feels instant
     setPlans((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
 
     try {
@@ -86,7 +87,6 @@ export default function ActionPlansBoard({ initialPlans }) {
       });
       if (!res.ok) throw new Error("Failed to update status");
     } catch (err) {
-      // Revert on failure
       setPlans((prev) => prev.map((p) => (p.id === id ? { ...p, status: current.status } : p)));
       setErrorMsg(err.message);
     }
@@ -132,7 +132,15 @@ export default function ActionPlansBoard({ initialPlans }) {
           ))}
         </div>
         <button
-          onClick={() => setShowForm((s) => !s)}
+          onClick={() => {
+            if (!showForm) {
+              setDraft((d) => ({
+                ...d,
+                category: activeCategory === "All" ? categories[0] : activeCategory,
+              }));
+            }
+            setShowForm((s) => !s);
+          }}
           className="focus-ring px-4 py-2 bg-tag text-bone text-[12px] uppercase tracking-wide font-mono rounded-sm hover:opacity-90"
         >
           {showForm ? "Close" : "+ New Plan Item"}
@@ -217,7 +225,7 @@ export default function ActionPlansBoard({ initialPlans }) {
               ))}
             </select>
           </div>
-          <div className="flex flex-col gap-1 col-span-6">
+          <div className="flex flex-col gap-1 col-span-3">
             <label className="text-[11px] font-mono text-fog uppercase">Notes</label>
             <textarea
               value={draft.notes}
@@ -225,6 +233,16 @@ export default function ActionPlansBoard({ initialPlans }) {
               className="focus-ring border border-mist rounded-sm px-3 py-2 text-[13px]"
               placeholder="Optional notes"
               rows={2}
+            />
+          </div>
+          <div className="flex flex-col gap-1 col-span-3">
+            <label className="text-[11px] font-mono text-fog uppercase">Link (optional)</label>
+            <input
+              type="url"
+              value={draft.link}
+              onChange={(e) => setDraft({ ...draft, link: e.target.value })}
+              className="focus-ring border border-mist rounded-sm px-3 py-2 text-[13px]"
+              placeholder="https://..."
             />
           </div>
           <button
@@ -248,6 +266,7 @@ export default function ActionPlansBoard({ initialPlans }) {
               <th className="py-3 px-5 font-medium">Status</th>
               <th className="py-3 px-5 font-medium">Priority</th>
               <th className="py-3 px-5 font-medium">Notes</th>
+              <th className="py-3 px-5 font-medium">Link</th>
               <th className="py-3 px-5 font-medium"></th>
             </tr>
           </thead>
@@ -266,8 +285,20 @@ export default function ActionPlansBoard({ initialPlans }) {
                 <td className="py-3 px-5">
                   <PriorityBadge priority={p.priority} styles={priorityStyles} />
                 </td>
-                <td className="py-3 px-5 text-ash text-[12px] max-w-[200px] truncate">
+                <td className="py-3 px-5 text-ash text-[12px] max-w-[160px] truncate">
                   {p.notes}
+                </td>
+                <td className="py-3 px-5">
+                  {p.link ? (
+                    <a
+                      href={p.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-mono uppercase text-tag hover:underline"
+                    >
+                      Open ↗
+                    </a>
+                  ) : null}
                 </td>
                 <td className="py-3 px-5">
                   <button
@@ -281,7 +312,7 @@ export default function ActionPlansBoard({ initialPlans }) {
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-8 px-5 text-center text-ash text-[13px]">
+                <td colSpan={9} className="py-8 px-5 text-center text-ash text-[13px]">
                   No items in this plan yet. Add one above.
                 </td>
               </tr>
