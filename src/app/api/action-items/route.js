@@ -36,7 +36,7 @@ export async function POST(request) {
   try {
     await ensureSchema();
     const body = await request.json();
-    const { category, title, owner, dueDate, status, priority, notes } = body;
+    const { category, title, owner, dueDate, status, priority, notes, link } = body;
 
     if (!title || !owner || !dueDate) {
       return Response.json(
