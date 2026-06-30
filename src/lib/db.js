@@ -45,6 +45,7 @@ export async function ensureSchema() {
       status TEXT NOT NULL DEFAULT 'Not Started',
       priority TEXT NOT NULL DEFAULT 'Medium',
       notes TEXT,
+      link TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     );
   `);
