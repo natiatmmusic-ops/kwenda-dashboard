@@ -21,8 +21,9 @@ function fmt(year, month, day) {
 }
 
 export default function MonthCalendar({ initialEvents }) {
-  const [year] = useState(2026);
-  const [month] = useState(5); // June (0-indexed)
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth());
   const [events, setEvents] = useState(initialEvents);
   const [draft, setDraft] = useState({ date: "", title: "", type: "content" });
   const [showForm, setShowForm] = useState(false);
@@ -41,6 +42,29 @@ export default function MonthCalendar({ initialEvents }) {
     return map;
   }, [events]);
 
+  function goToPrevMonth() {
+    if (month === 0) {
+      setMonth(11);
+      setYear((y) => y - 1);
+    } else {
+      setMonth((m) => m - 1);
+    }
+  }
+
+  function goToNextMonth() {
+    if (month === 11) {
+      setMonth(0);
+      setYear((y) => y + 1);
+    } else {
+      setMonth((m) => m + 1);
+    }
+  }
+
+  function goToToday() {
+    setYear(today.getFullYear());
+    setMonth(today.getMonth());
+  }
+
   function addEvent(e) {
     e.preventDefault();
     if (!draft.date || !draft.title) return;
@@ -54,8 +78,32 @@ export default function MonthCalendar({ initialEvents }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="font-display text-xl uppercase tracking-wide">{monthLabel}</div>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={goToPrevMonth}
+            className="focus-ring px-3 py-1.5 border border-mist rounded-sm text-[13px] font-mono hover:bg-charcoal/[0.03]"
+            aria-label="Previous month"
+          >
+            ←
+          </button>
+          <div className="font-display text-xl uppercase tracking-wide min-w-[200px] text-center">
+            {monthLabel}
+          </div>
+          <button
+            onClick={goToNextMonth}
+            className="focus-ring px-3 py-1.5 border border-mist rounded-sm text-[13px] font-mono hover:bg-charcoal/[0.03]"
+            aria-label="Next month"
+          >
+            →
+          </button>
+          <button
+            onClick={goToToday}
+            className="focus-ring px-3 py-1.5 border border-mist rounded-sm text-[11px] font-mono uppercase text-ash hover:bg-charcoal/[0.03]"
+          >
+            Today
+          </button>
+        </div>
         <button
           onClick={() => setShowForm((s) => !s)}
           className="focus-ring px-4 py-2 bg-ink text-bone text-[12px] uppercase tracking-wide font-mono rounded-sm hover:bg-charcoal transition-colors"
